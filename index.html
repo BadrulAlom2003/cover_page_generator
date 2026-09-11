@@ -1,0 +1,1159 @@
+<!doctype html>
+<html lang="bn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Assignment Cover Page Maker - ZHSUST Style</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Times+New+Roman&family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+      :root {
+        --ink: #1e293b;
+        --ink-soft: #334155;
+        --paper: #f8fafc;
+        --brass: #d97706;
+        --brass-dark: #b45309;
+        --panel: #f1f5f9;
+        --panel-border: #cbd5e1;
+        --charcoal: #0f172a;
+        --muted: #64748b;
+        --danger: #ef4444;
+        --serif: "Times New Roman", Times, serif;
+        --sans: "Inter", sans-serif;
+        --bn: "Hind Siliguri", "Inter", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+      }
+      body {
+        font-family: var(--bn);
+        background: #e2e8f0;
+        color: var(--charcoal);
+      }
+
+      .app {
+        display: grid;
+        grid-template-columns: 420px 1fr;
+        min-height: 100vh;
+      }
+
+      /* Mobile Switcher Bar */
+      .mobile-tabs {
+        display: none;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: #0f172a;
+        padding: 8px 12px;
+        gap: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .mobile-tab-btn {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 6px;
+        background: #1e293b;
+        color: #94a3b8;
+        font-family: var(--bn);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+      }
+
+      .mobile-tab-btn.active {
+        background: var(--brass-dark);
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(180, 83, 9, 0.4);
+      }
+
+      @media (max-width: 960px) {
+        .app {
+          grid-template-columns: 1fr;
+          display: block;
+        }
+
+        .mobile-tabs {
+          display: flex;
+        }
+
+        .panel {
+          max-height: none !important;
+          border-right: none !important;
+          padding: 20px 16px 40px !important;
+        }
+
+        .preview-area {
+          padding: 20px 12px 60px !important;
+        }
+
+        .view-mode-edit .preview-area {
+          display: none !important;
+        }
+
+        .view-mode-preview .panel {
+          display: none !important;
+        }
+      }
+
+      /* Left panel controls */
+      .panel {
+        background: var(--panel);
+        border-right: 1px solid var(--panel-border);
+        padding: 24px 22px 60px;
+        max-height: 100vh;
+        overflow-y: auto;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 4px;
+      }
+      .brand h1 {
+        font-family: var(--bn);
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 0;
+      }
+      .brand-sub {
+        font-size: 12.5px;
+        color: var(--muted);
+        margin: 0 0 20px 0;
+        padding-left: 32px;
+      }
+
+      .section-title {
+        font-family: var(--bn);
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--ink);
+        margin: 22px 0 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .section-title:first-of-type {
+        margin-top: 0;
+      }
+      .section-title .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--brass-dark);
+        flex: none;
+      }
+
+      .field {
+        margin-bottom: 11px;
+      }
+      .field label {
+        display: block;
+        font-size: 12px;
+        color: var(--ink-soft);
+        margin-bottom: 4px;
+        font-weight: 600;
+      }
+      .field input,
+      .field select,
+      .field textarea {
+        width: 100%;
+        padding: 9px 11px;
+        border: 1px solid var(--panel-border);
+        border-radius: 6px;
+        background: #ffffff;
+        font-family: var(--bn);
+        font-size: 14px;
+        color: var(--charcoal);
+        outline: none;
+        transition: all 0.15s ease;
+      }
+
+      .field input[readonly] {
+        background: #e2e8f0;
+        color: #475569;
+        cursor: not-allowed;
+      }
+      .field input:focus,
+      .field select:focus,
+      .field textarea:focus {
+        border-color: var(--brass-dark);
+        box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.15);
+      }
+
+      .row2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      @media (max-width: 480px) {
+        .row2 {
+          grid-template-columns: 1fr;
+          gap: 0;
+        }
+      }
+
+      .assign-card {
+        border: 1px solid var(--panel-border);
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 14px 12px 6px;
+        margin-bottom: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+      .assign-card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .assign-card-head span {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--brass-dark);
+      }
+      .remove-btn {
+        border: none;
+        background: none;
+        color: var(--danger);
+        font-size: 12px;
+        cursor: pointer;
+        padding: 2px 4px;
+        font-family: var(--bn);
+        font-weight: 600;
+      }
+      .remove-btn:hover {
+        text-decoration: underline;
+      }
+      .subhead {
+        font-size: 11.5px;
+        color: var(--muted);
+        margin: 12px 0 6px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .add-btn {
+        width: 100%;
+        padding: 10px;
+        border: 1.5px dashed var(--brass-dark);
+        background: transparent;
+        color: var(--brass-dark);
+        border-radius: 7px;
+        font-size: 13.5px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: var(--bn);
+        margin-bottom: 8px;
+        transition: background 0.15s ease;
+      }
+      .add-btn:hover {
+        background: rgba(217, 119, 6, 0.08);
+      }
+
+      .download-btn {
+        width: 100%;
+        padding: 12px;
+        margin-top: 20px;
+        border: none;
+        border-radius: 8px;
+        background: #0f172a;
+        color: #ffffff;
+        font-size: 14.5px;
+        font-weight: 600;
+        font-family: var(--bn);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+        transition: background 0.15s ease;
+      }
+      .download-btn:hover {
+        background: #1e293b;
+      }
+      .download-btn:disabled {
+        background: #94a3b8;
+        cursor: wait;
+      }
+
+      .developer-info {
+        margin-top: 30px;
+        padding: 16px;
+        background: #ffffff;
+        border: 1px solid var(--panel-border);
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      }
+      .developer-info h3 {
+        margin: 0 0 8px 0;
+        font-size: 12px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-weight: 700;
+      }
+      .developer-info .dev-name {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .developer-info .dev-sub {
+        font-size: 12.5px;
+        color: var(--muted);
+        margin: 2px 0 10px 0;
+        font-weight: 500;
+      }
+      .developer-info .contact-links {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--ink-soft);
+        border-top: 1px dashed var(--panel-border);
+        padding-top: 10px;
+      }
+      .developer-info .contact-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        text-decoration: none;
+        color: var(--ink-soft);
+        transition: color 0.15s ease;
+      }
+      .developer-info .contact-item:hover {
+        color: var(--brass-dark);
+      }
+
+      .preview-area {
+        padding: 30px 20px 60px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+        overflow-y: auto;
+        width: 100%;
+      }
+      .preview-toolbar {
+        width: 100%;
+        max-width: 794px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .preview-toolbar h2 {
+        font-family: var(--bn);
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--ink-soft);
+        margin: 0;
+      }
+      .page-count {
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 500;
+      }
+
+      .page-wrapper {
+        width: 100%;
+        max-width: 794px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+      }
+
+      .page-shell {
+        background: #ffffff;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.22);
+        transform-origin: top center;
+        transition: transform 0.2s ease;
+      }
+
+      /* Cover Page Styling */
+      .page {
+        width: 794px;
+        height: 1123px;
+        background: #ffffff;
+        position: relative;
+        overflow: hidden;
+        font-family: "Times New Roman", Times, serif;
+        color: #000000;
+        box-sizing: border-box;
+      }
+
+      .watermark-bg-img {
+        position: absolute;
+        top: 52%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 320px;
+        height: auto;
+        opacity: 0.08;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .page-bg-graphics {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .page-content {
+        position: relative;
+        z-index: 10;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 60px 60px 45px;
+        box-sizing: border-box;
+      }
+
+      .header-block {
+        margin-bottom: 20px;
+        max-width: 680px;
+      }
+
+      .uni-title {
+        font-family: "Times New Roman", Times, serif;
+        font-weight: 700;
+        font-size: 20.5px;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        color: #000000;
+        margin: 0 0 6px 0;
+        line-height: 1.3;
+      }
+
+      .header-dept-title {
+        font-family: "Times New Roman", Times, serif;
+        font-size: 17.5px;
+        font-weight: 600;
+        color: #000000;
+        letter-spacing: 0.2px;
+        margin-top: 25px;
+      }
+
+      .logo-container {
+        width: 120px;
+        height: 120px;
+        margin: 0 0 15px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .logo-container img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+
+      .doc-type-title {
+        font-family: "Times New Roman", Times, serif;
+        font-weight: 700;
+        font-size: 23px;
+        color: #000000;
+        margin: 5px 0 39px 0;
+      }
+
+      .course-details {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        max-width: 650px;
+      }
+
+      .course-line {
+        font-family: "Times New Roman", Times, serif;
+        font-size: 16.5px;
+        color: #000000;
+        margin: 0;
+      }
+
+      .topic-box {
+        margin-top: 4px;
+        font-family: "Times New Roman", Times, serif;
+        font-size: 16.5px;
+        font-weight: 700;
+        color: #000000;
+        line-height: 1.4;
+      }
+
+      .submission-block {
+        margin-top: 10px;
+        margin-bottom: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .submission-label {
+        font-family: "Times New Roman", Times, serif;
+        font-weight: 700;
+        font-size: 14px;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        color: #000000;
+        margin: 0 0 5px 0;
+      }
+
+      .person-name {
+        font-family: "Times New Roman", Times, serif;
+        font-weight: 700;
+        font-size: 17px;
+        color: #000000;
+        margin: 0 0 3px 0;
+      }
+
+      .person-meta {
+        font-family: "Times New Roman", Times, serif;
+        font-size: 15.5px;
+        color: #000000;
+        margin: 0 0 2px 0;
+      }
+
+      .submission-date-line {
+        margin-top: auto;
+        font-family: "Times New Roman", Times, serif;
+        font-size: 16px;
+        font-weight: 600;
+        color: #000000;
+        margin-bottom: 25px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app view-mode-edit" id="appContainer">
+      <div class="mobile-tabs">
+        <button class="mobile-tab-btn active" id="tabEditBtn" type="button">
+          তথ্য এডিট করুন
+        </button>
+        <button class="mobile-tab-btn" id="tabPreviewBtn" type="button">
+          প্রিভিউ
+        </button>
+      </div>
+
+      <div class="panel">
+        <div class="brand">
+          <h1>অ্যাসাইনমেন্ট কভার পেজ জেনারেটর</h1>
+        </div>
+        <p class="brand-sub">
+          সহজেই ZHSUST ফরম্যাটে ল্যাব রিপোর্ট ও অ্যাসাইনমেন্ট তৈরি করুন
+        </p>
+
+        <div class="section-title">
+          <span class="dot"></span>শিক্ষার্থীর ডিপার্টমেন্ট
+        </div>
+        <div class="field">
+          <label>বিশ্ববিদ্যালয় / কলেজের নাম</label>
+          <input
+            type="text"
+            id="university"
+            value="Z. H. SIKDER UNIVERSITY OF SCIENCE AND TECHNOLOGY"
+          />
+        </div>
+
+        <div class="field">
+          <label>শিক্ষার্থীর ডিপার্টমেন্ট সিলেক্ট করুন</label>
+          <select id="deptSelect"></select>
+        </div>
+
+        <div class="row2">
+          <div class="field">
+            <label>ডিপার্টমেন্ট (পূর্ণ নাম)</label>
+            <input
+              type="text"
+              id="deptFull"
+              value="Department of Computer Science and Engineering"
+              readonly
+            />
+          </div>
+          <div class="field">
+            <label>ডিপার্টমেন্ট (সংক্ষেপে)</label>
+            <input
+              type="text"
+              id="deptShort"
+              value="Dept. of CSE, ZHSUST"
+              readonly
+            />
+          </div>
+        </div>
+
+        <div class="section-title">
+          <span class="dot"></span>শিক্ষার্থীর তথ্য
+        </div>
+        <div class="field">
+          <label>শিক্ষার্থীর নাম</label>
+          <input type="text" id="studentName" value="MD. BADRUL ALOM" />
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>ব্যাচ</label>
+            <input type="text" id="batch" value="29th Batch" />
+          </div>
+          <div class="field">
+            <label>স্টুডেন্ট আইডি (ID NO)</label>
+            <input type="text" id="studentId" value="0592320105101023" />
+          </div>
+        </div>
+
+        <div class="section-title">
+          <span class="dot"></span>কোর্স ও শিক্ষকের তথ্য
+        </div>
+        <div id="assignmentsList"></div>
+        <button class="add-btn" id="addAssignmentBtn" type="button">
+          + নতুন কভার পেজ যোগ করুন
+        </button>
+
+        <button class="download-btn" id="downloadBtn" type="button">
+          <span id="downloadBtnText">PDF ডাউনলোড করুন</span>
+        </button>
+
+        <!-- Developer Information Box -->
+        <div class="developer-info">
+          <h3>Developed By</h3>
+          <p class="dev-name">Md. Badrul Alom</p>
+          <p class="dev-sub">Department of CSE, ZHSUST</p>
+
+          <div class="contact-links">
+            <a href="mailto:badrulalom@example.com" class="contact-item">
+              📧 badrulalom@example.com
+            </a>
+            <a href="tel:+8801700000000" class="contact-item">
+              📞 +880 1700-000000
+            </a>
+            <a href="https://linkedin.com" target="_blank" class="contact-item">
+              🌐 linkedin.com/in/badrulalom
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="preview-area" id="previewArea"></div>
+    </div>
+
+    <script>
+      (function () {
+        const departments = [
+          {
+            id: "cse",
+            label: "Department of Computer Science and Engineering",
+            full: "Department of Computer Science and Engineering",
+            short: "Dept. of CSE, ZHSUST",
+            watermarkImg: "images/watermark_cse.png",
+          },
+          {
+            id: "che",
+            label: "Department of Chemical Engineering",
+            full: "Department of Chemical Engineering",
+            short: "Dept. of ChE, ZHSUST",
+            watermarkImg: "images/watermark_che.png",
+          },
+          {
+            id: "civil",
+            label: "Department of Civil Engineering",
+            full: "Department of Civil Engineering",
+            short: "Dept. of CE, ZHSUST",
+            watermarkImg: "images/watermark_civil.png",
+          },
+          {
+            id: "eee",
+            label: "Department of Electrical and Electronics Engineering",
+            full: "Department of Electrical and Electronics Engineering",
+            short: "Dept. of EEE, ZHSUST",
+            watermarkImg: "images/watermark_eee.png",
+          },
+          {
+            id: "bba",
+            label: "Department of Business Administration",
+            full: "Department of Business Administration",
+            short: "Dept. of BBA, ZHSUST",
+            watermarkImg: "images/watermark_bba.png",
+          },
+          {
+            id: "english",
+            label: "Department of English",
+            full: "Department of English",
+            short: "Dept. of English, ZHSUST",
+            watermarkImg: "images/watermark_english.png",
+          },
+          {
+            id: "law",
+            label: "Department of Law",
+            full: "Department of Law",
+            short: "Dept. of Law, ZHSUST",
+            watermarkImg: "images/watermark_law.png",
+          },
+        ];
+
+        let assignments = [
+          {
+            documentType: "Lab Report",
+            courseTitle: "Computer Organization and Assembly Language Lab",
+            courseCode: "CSE 3104",
+            topicTitle: "Design and Implementation of Basic Logic Gates",
+            teacherName: "Dr. Md. Mahafujur Rahaman",
+            teacherDesignation: "Associate Professor and Chairman,",
+            teacherDeptId: "cse",
+            submissionDate: "12/09/2026",
+          },
+        ];
+
+        const appContainer = document.getElementById("appContainer");
+        const tabEditBtn = document.getElementById("tabEditBtn");
+        const tabPreviewBtn = document.getElementById("tabPreviewBtn");
+        const listEl = document.getElementById("assignmentsList");
+        const previewArea = document.getElementById("previewArea");
+        const deptSelectEl = document.getElementById("deptSelect");
+        const deptFullEl = document.getElementById("deptFull");
+        const deptShortEl = document.getElementById("deptShort");
+        const commonFieldIds = [
+          "university",
+          "deptFull",
+          "deptShort",
+          "studentName",
+          "studentId",
+          "batch",
+        ];
+
+        departments.forEach((d) => {
+          const opt = document.createElement("option");
+          opt.value = d.id;
+          opt.textContent = d.label;
+          deptSelectEl.appendChild(opt);
+        });
+        deptSelectEl.value = "cse";
+
+        deptSelectEl.addEventListener("change", () => {
+          const dept = departments.find((d) => d.id === deptSelectEl.value);
+          if (dept) {
+            deptFullEl.value = dept.full;
+            deptShortEl.value = dept.short;
+          }
+          renderPreview();
+        });
+
+        tabEditBtn.addEventListener("click", () => {
+          appContainer.classList.remove("view-mode-preview");
+          appContainer.classList.add("view-mode-edit");
+          tabEditBtn.classList.add("active");
+          tabPreviewBtn.classList.remove("active");
+        });
+
+        tabPreviewBtn.addEventListener("click", () => {
+          appContainer.classList.remove("view-mode-edit");
+          appContainer.classList.add("view-mode-preview");
+          tabPreviewBtn.classList.add("active");
+          tabEditBtn.classList.remove("active");
+          autoScalePages();
+        });
+
+        function getCommon() {
+          const o = {};
+          commonFieldIds.forEach(
+            (id) => (o[id] = document.getElementById(id).value.trim()),
+          );
+          o.deptId = deptSelectEl.value;
+          return o;
+        }
+
+        function escapeAttr(s) {
+          return String(s || "")
+            .replace(/&/g, "&amp;")
+            .replace(/"/g, "&quot;");
+        }
+        function escapeHtml(s) {
+          return String(s || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+        }
+
+        function renderAssignmentCards() {
+          listEl.innerHTML = "";
+          assignments.forEach((a, idx) => {
+            const card = document.createElement("div");
+            card.className = "assign-card";
+            card.innerHTML = `
+        <div class="assign-card-head">
+          <span>কভার পেজ ${idx + 1}</span>
+          ${assignments.length > 1 ? `<button class="remove-btn" data-idx="${idx}" type="button">মুছুন</button>` : ""}
+        </div>
+        <div class="field">
+          <label>ডকুমেন্টের ধরন</label>
+          <select data-idx="${idx}" data-key="documentType">
+            <option value="Lab Report" ${a.documentType === "Lab Report" ? "selected" : ""}>Lab Report</option>
+            <option value="Assignment" ${a.documentType === "Assignment" ? "selected" : ""}>Assignment</option>
+            <option value="Project Proposal" ${a.documentType === "Project Proposal" ? "selected" : ""}>Project Proposal</option>
+          </select>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>কোর্সের নাম</label>
+            <input type="text" data-idx="${idx}" data-key="courseTitle" value="${escapeAttr(a.courseTitle)}">
+          </div>
+          <div class="field">
+            <label>কোর্স কোড</label>
+            <input type="text" data-idx="${idx}" data-key="courseCode" value="${escapeAttr(a.courseCode)}">
+          </div>
+        </div>
+        <div class="field">
+          <label>বিষয় / শিরোনাম (Topic / Title)</label>
+          <input type="text" data-idx="${idx}" data-key="topicTitle" placeholder="যেমন: Experiment Name বা Assignment Topic" value="${escapeAttr(a.topicTitle)}">
+        </div>
+        <p class="subhead">সাবমিটেড টু (শিক্ষক)</p>
+        <div class="row2">
+          <div class="field">
+            <label>শিক্ষকের নাম</label>
+            <input type="text" data-idx="${idx}" data-key="teacherName" value="${escapeAttr(a.teacherName)}">
+          </div>
+          <div class="field">
+            <label>পদবি</label>
+            <input type="text" data-idx="${idx}" data-key="teacherDesignation" value="${escapeAttr(a.teacherDesignation)}">
+          </div>
+        </div>
+        <div class="field">
+          <label>শিক্ষকের ডিপার্টমেন্ট</label>
+          <select data-idx="${idx}" data-key="teacherDeptId">
+            ${departments.map((d) => `<option value="${d.id}" ${a.teacherDeptId === d.id ? "selected" : ""}>${d.label}</option>`).join("")}
+          </select>
+        </div>
+        <div class="field">
+          <label>জমা দেওয়ার তারিখ (Submission Date)</label>
+          <input type="text" data-idx="${idx}" data-key="submissionDate" value="${escapeAttr(a.submissionDate)}">
+        </div>
+      `;
+            listEl.appendChild(card);
+          });
+
+          listEl.querySelectorAll("input, select").forEach((elem) => {
+            elem.addEventListener("change", (e) => {
+              const idx = +e.target.dataset.idx;
+              const key = e.target.dataset.key;
+              assignments[idx][key] = e.target.value;
+              renderPreview();
+            });
+            if (elem.tagName === "INPUT") {
+              elem.addEventListener("input", (e) => {
+                const idx = +e.target.dataset.idx;
+                const key = e.target.dataset.key;
+                assignments[idx][key] = e.target.value;
+                renderPreview();
+              });
+            }
+          });
+
+          listEl.querySelectorAll(".remove-btn").forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const idx = +e.target.dataset.idx;
+              assignments.splice(idx, 1);
+              renderAssignmentCards();
+              renderPreview();
+            });
+          });
+        }
+
+        function pageBgSvg() {
+          return `
+    <svg class="page-bg-graphics" viewBox="0 0 794 1123" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 0 0 L 280 0 C 180 0, 0 100, 0 280 Z" fill="#e2e8f0" />
+      <path d="M 0 0 L 230 0 C 140 0, 0 80, 0 230 Z" fill="#94a3b8" opacity="0.8" />
+      <path d="M 0 0 L 180 0 C 100 0, 0 60, 0 180 Z" fill="#334155" />
+
+      <path d="M 794 1123 L 514 1123 C 614 1123, 794 1023, 794 843 Z" fill="#cbd5e1" opacity="0.7" />
+      <path d="M 794 1123 L 564 1123 C 654 1123, 794 1043, 794 893 Z" fill="#94a3b8" opacity="0.8" />
+      <path d="M 794 1123 L 614 1123 C 694 1123, 794 1063, 794 943 Z" fill="#334155" />
+    </svg>`;
+        }
+
+        function pageHtml(common, a) {
+          const uni =
+            common.university ||
+            "Z. H. SIKDER UNIVERSITY OF SCIENCE AND TECHNOLOGY";
+          const studentDeptFull =
+            common.deptFull || "Department of Computer Science and Engineering";
+          const studentDeptShort = common.deptShort || "Dept. of CSE, ZHSUST";
+          const docType = a.documentType || "Lab Report";
+          const courseTitle =
+            a.courseTitle || "Computer Organization and Assembly Language Lab";
+          const courseCode = a.courseCode || "CSE 3104";
+          const topicTitle = a.topicTitle || "";
+
+          const teacherName = a.teacherName || "Dr. Md. Mahafujur Rahaman";
+          const teacherDesig =
+            a.teacherDesignation || "Associate Professor and Chairman,";
+
+          const teacherDeptObj = departments.find(
+            (d) => d.id === (a.teacherDeptId || "cse"),
+          );
+          const teacherDeptShort = teacherDeptObj
+            ? teacherDeptObj.short
+            : studentDeptShort;
+
+          const studentName = (
+            common.studentName || "MD. BADRUL ALOM"
+          ).toUpperCase();
+          const batch = common.batch
+            ? common.batch.toLowerCase().includes("batch")
+              ? common.batch
+              : `${common.batch} Batch`
+            : "29th Batch";
+          const studentId = common.studentId
+            ? common.studentId.startsWith("ID NO:")
+              ? common.studentId
+              : `ID NO: ${common.studentId}`
+            : "ID NO: 0592320105101023";
+          const subDate = a.submissionDate || "";
+
+          const currentDeptObj = departments.find(
+            (d) => d.id === common.deptId,
+          );
+          const watermarkSrc = currentDeptObj
+            ? currentDeptObj.watermarkImg
+            : "images/watermark_cse.png";
+
+          let topicPrefix = "Topic";
+          if (docType === "Lab Report") topicPrefix = "Experiment Name";
+          else if (docType === "Assignment") topicPrefix = "Assignment Topic";
+          else if (docType === "Project Proposal") topicPrefix = "Project Name";
+
+          return `
+      ${pageBgSvg()}
+      <img src="${watermarkSrc}" class="watermark-bg-img" crossorigin="anonymous" onerror="this.style.display='none'"/>
+
+      <div class="page-content">
+        <div class="header-block">
+          <h1 class="uni-title">${escapeHtml(uni)}</h1>
+          <p class="header-dept-title">${escapeHtml(studentDeptFull)}</p>
+        </div>
+        
+        <div class="logo-container">
+          <img src="images/logo.png" crossorigin="anonymous" onerror="this.style.display='none'"/>
+        </div>
+
+        <div class="doc-type-title">${escapeHtml(docType)}</div>
+        
+        <div class="course-details">
+          <p class="course-line">Course Title : ${escapeHtml(courseTitle)}</p>
+          <p class="course-line">Course Code : ${escapeHtml(courseCode)}</p>
+          ${topicTitle ? `<p class="topic-box">${topicPrefix} : ${escapeHtml(topicTitle)}</p>` : ""}
+        </div>
+
+        <div class="submission-block" style="margin-top:10px;">
+          <p class="submission-label">SUBMITTED TO :</p>
+          <p class="person-name">${escapeHtml(teacherName)}</p>
+          <p class="person-meta">${escapeHtml(teacherDesig)}</p>
+          <p class="person-meta">${escapeHtml(teacherDeptShort)}</p>
+        </div>
+
+        <div class="submission-block" style="margin-top:15px;">
+          <p class="submission-label">SUBMITTED BY :</p>
+          <p class="person-name">${escapeHtml(studentName)}</p>
+          <p class="person-meta">${escapeHtml(batch)}</p>
+          <p class="person-meta">${escapeHtml(studentId)}</p>
+          <p class="person-meta">${escapeHtml(studentDeptShort)}</p>
+        </div>
+
+        ${subDate ? `<div class="submission-date-line">Date of Submission: ${escapeHtml(subDate)}</div>` : '<div style="margin-top:auto;"></div>'}
+      </div>
+    `;
+        }
+
+        function autoScalePages() {
+          const wrappers = document.querySelectorAll(".page-wrapper");
+          wrappers.forEach((wrapper) => {
+            const containerWidth = wrapper.clientWidth;
+            const targetWidth = 794;
+            if (containerWidth < targetWidth && containerWidth > 0) {
+              const scale = containerWidth / targetWidth;
+              const shell = wrapper.querySelector(".page-shell");
+              if (shell) {
+                shell.style.transform = `scale(${scale})`;
+                wrapper.style.height = `${1123 * scale}px`;
+              }
+            } else {
+              const shell = wrapper.querySelector(".page-shell");
+              if (shell) {
+                shell.style.transform = `scale(1)`;
+                wrapper.style.height = "auto";
+              }
+            }
+          });
+        }
+
+        function renderPreview() {
+          const common = getCommon();
+          previewArea.innerHTML = "";
+
+          const toolbar = document.createElement("div");
+          toolbar.className = "preview-toolbar";
+          toolbar.innerHTML = `<h2>লাইভ প্রিভিউ (A4 সাইজ)</h2><span class="page-count">${assignments.length} টি পেজ</span>`;
+          previewArea.appendChild(toolbar);
+
+          assignments.forEach((a, idx) => {
+            const wrapper = document.createElement("div");
+            wrapper.className = "page-wrapper";
+
+            const shell = document.createElement("div");
+            shell.className = "page-shell";
+
+            const page = document.createElement("div");
+            page.className = "page";
+            page.id = "pdfPage" + idx;
+            page.innerHTML = pageHtml(common, a);
+
+            shell.appendChild(page);
+            wrapper.appendChild(shell);
+            previewArea.appendChild(wrapper);
+          });
+
+          autoScalePages();
+        }
+
+        window.addEventListener("resize", autoScalePages);
+
+        document
+          .getElementById("addAssignmentBtn")
+          .addEventListener("click", () => {
+            assignments.push({
+              documentType: "Lab Report",
+              courseTitle: "",
+              courseCode: "",
+              topicTitle: "",
+              teacherName: "",
+              teacherDesignation: "",
+              teacherDeptId: deptSelectEl.value,
+              submissionDate: "",
+            });
+            renderAssignmentCards();
+            renderPreview();
+          });
+
+        commonFieldIds.forEach((id) => {
+          document.getElementById(id).addEventListener("input", renderPreview);
+        });
+
+        document
+          .getElementById("downloadBtn")
+          .addEventListener("click", async () => {
+            const btn = document.getElementById("downloadBtn");
+            const btnText = document.getElementById("downloadBtnText");
+            btn.disabled = true;
+            btnText.textContent = "PDF তৈরি হচ্ছে...";
+
+            const isEditMode =
+              appContainer.classList.contains("view-mode-edit");
+            if (isEditMode) {
+              appContainer.classList.remove("view-mode-edit");
+              appContainer.classList.add("view-mode-preview");
+            }
+
+            // ডায়মেনশন ও স্কেল রি-অ্যাডজাস্টমেন্ট
+            const wrappers = document.querySelectorAll(".page-wrapper");
+            const originalStyles = [];
+
+            wrappers.forEach((w) => {
+              const shell = w.querySelector(".page-shell");
+              originalStyles.push({
+                transform: shell.style.transform,
+                height: w.style.height,
+              });
+              shell.style.transform = "scale(1)";
+              w.style.height = "auto";
+            });
+
+            try {
+              const { jsPDF } = window.jspdf;
+              const pdf = new jsPDF({
+                unit: "px",
+                format: [794, 1123],
+                orientation: "portrait",
+              });
+
+              const pages = document.querySelectorAll(".page");
+
+              for (let i = 0; i < pages.length; i++) {
+                const page = pages[i];
+
+                const canvas = await html2canvas(page, {
+                  scale: 2,
+                  useCORS: true,
+                  allowTaint: false,
+                  logging: false,
+                  backgroundColor: "#ffffff",
+                  width: 794,
+                  height: 1123,
+                });
+
+                const imgData = canvas.toDataURL("image/jpeg", 0.95);
+                if (i > 0) pdf.addPage([794, 1123], "portrait");
+                pdf.addImage(imgData, "JPEG", 0, 0, 794, 1123);
+              }
+
+              const common = getCommon();
+              const fname =
+                (common.studentName
+                  ? common.studentName.replace(/\s+/g, "_")
+                  : "ZHSUST") + "_Cover_Page.pdf";
+              pdf.save(fname);
+            } catch (err) {
+              alert(
+                "দুঃখিত, PDF তৈরি করতে সমস্যা হয়েছে। আপনার লোগো বা ওয়াটারমার্ক ফাইলগুলোর পাথ ঠিক আছে কিনা তা পরীক্ষা করুন।",
+              );
+              console.error(err);
+            } finally {
+              // স্টাইল ও ভিউ আগের অবস্থায় ফেরানো
+              wrappers.forEach((w, idx) => {
+                const shell = w.querySelector(".page-shell");
+                if (shell)
+                  shell.style.transform = originalStyles[idx].transform;
+                w.style.height = originalStyles[idx].height;
+              });
+
+              if (isEditMode) {
+                appContainer.classList.remove("view-mode-preview");
+                appContainer.classList.add("view-mode-edit");
+              }
+
+              btn.disabled = false;
+              btnText.textContent = "PDF ডাউনলোড করুন";
+            }
+          });
+
+        renderAssignmentCards();
+        renderPreview();
+      })();
+    </script>
+  </body>
+</html>
