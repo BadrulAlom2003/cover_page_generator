@@ -188,7 +188,7 @@
         outline: none;
         transition: all 0.15s ease;
       }
-      /* Readonly Field Styling */
+
       .field input[readonly] {
         background: #e2e8f0;
         color: #475569;
@@ -558,7 +558,7 @@
         </p>
 
         <div class="section-title">
-          <span class="dot"></span>শিক্ষাপ্রতিষ্ঠানের তথ্য
+          <span class="dot"></span>শিক্ষার্থীর ডিপার্টমেন্ট
         </div>
         <div class="field">
           <label>বিশ্ববিদ্যালয় / কলেজের নাম</label>
@@ -570,7 +570,7 @@
         </div>
 
         <div class="field">
-          <label>ডিপার্টমেন্ট সিলেক্ট করুন</label>
+          <label>শিক্ষার্থীর ডিপার্টমেন্ট সিলেক্ট করুন</label>
           <select id="deptSelect"></select>
         </div>
 
@@ -625,25 +625,21 @@
           <span id="downloadBtnText">PDF ডাউনলোড করুন</span>
         </button>
 
-        <!-- Developer Information Box with Contact Details -->
+        <!-- Developer Information Box -->
         <div class="developer-info">
           <h3>Developed By</h3>
           <p class="dev-name">Md. Badrul Alom</p>
           <p class="dev-sub">Department of CSE, ZHSUST</p>
 
           <div class="contact-links">
-            <a href="mailto:mdbadrulalom26@gmail.com" class="contact-item">
-              📧 mdbadrulalom26@gmail.com
+            <a href="mailto:badrulalom@example.com" class="contact-item">
+              📧 badrulalom@example.com
             </a>
-            <a href="tel:+880 1648-008842" class="contact-item">
-              📞 +880 1648008842
+            <a href="tel:+8801700000000" class="contact-item">
+              📞 +880 1700-000000
             </a>
-            <a
-              href="https://www.facebook.com/shameem.023"
-              target="_blank"
-              class="contact-item"
-            >
-              🌐 facebook.com/shameem.023
+            <a href="https://linkedin.com" target="_blank" class="contact-item">
+              🌐 linkedin.com/in/badrulalom
             </a>
           </div>
         </div>
@@ -713,6 +709,7 @@
             courseCode: "CSE 3104",
             teacherName: "Dr. Md. Mahafujur Rahaman",
             teacherDesignation: "Associate Professor and Chairman,",
+            teacherDeptId: "cse",
             submissionDate: "12/09/2026",
           },
         ];
@@ -799,7 +796,10 @@
         </div>
         <div class="field">
           <label>ডকুমেন্টের ধরন</label>
-          <input type="text" data-idx="${idx}" data-key="documentType" value="${escapeAttr(a.documentType)}">
+          <select data-idx="${idx}" data-key="documentType">
+            <option value="Lab Report" ${a.documentType === "Lab Report" ? "selected" : ""}>Lab Report</option>
+            <option value="Assignment" ${a.documentType === "Assignment" ? "selected" : ""}>Assignment</option>
+          </select>
         </div>
         <div class="row2">
           <div class="field">
@@ -823,6 +823,12 @@
           </div>
         </div>
         <div class="field">
+          <label>শিক্ষকের ডিপার্টমেন্ট</label>
+          <select data-idx="${idx}" data-key="teacherDeptId">
+            ${departments.map((d) => `<option value="${d.id}" ${a.teacherDeptId === d.id ? "selected" : ""}>${d.label}</option>`).join("")}
+          </select>
+        </div>
+        <div class="field">
           <label>জমা দেওয়ার তারিখ (Submission Date)</label>
           <input type="text" data-idx="${idx}" data-key="submissionDate" value="${escapeAttr(a.submissionDate)}">
         </div>
@@ -830,13 +836,21 @@
             listEl.appendChild(card);
           });
 
-          listEl.querySelectorAll("input").forEach((inp) => {
-            inp.addEventListener("input", (e) => {
+          listEl.querySelectorAll("input, select").forEach((elem) => {
+            elem.addEventListener("change", (e) => {
               const idx = +e.target.dataset.idx;
               const key = e.target.dataset.key;
               assignments[idx][key] = e.target.value;
               renderPreview();
             });
+            if (elem.tagName === "INPUT") {
+              elem.addEventListener("input", (e) => {
+                const idx = +e.target.dataset.idx;
+                const key = e.target.dataset.key;
+                assignments[idx][key] = e.target.value;
+                renderPreview();
+              });
+            }
           });
 
           listEl.querySelectorAll(".remove-btn").forEach((btn) => {
@@ -866,16 +880,24 @@
           const uni =
             common.university ||
             "Z. H. SIKDER UNIVERSITY OF SCIENCE AND TECHNOLOGY";
-          const deptFull =
+          const studentDeptFull =
             common.deptFull || "Department of Computer Science and Engineering";
-          const deptShort = common.deptShort || "Dept. of CSE, ZHSUST";
+          const studentDeptShort = common.deptShort || "Dept. of CSE, ZHSUST";
           const docType = a.documentType || "Lab Report";
           const courseTitle =
             a.courseTitle || "Computer Organization and Assembly Language Lab";
           const courseCode = a.courseCode || "CSE 3104";
-          const teacherName = a.teacherName || "Dr. Md. Mahafujur Rahaman";
-          const teacherDesig =
-            a.teacherDesignation || "Associate Professor and Chairman,";
+          const teacherName = a.teacherName || "Md Moinuddin";
+          const teacherDesig = a.teacherDesignation || "Assistant Professor,";
+
+          // Get Teacher's Department Short Title
+          const teacherDeptObj = departments.find(
+            (d) => d.id === (a.teacherDeptId || "cse"),
+          );
+          const teacherDeptShort = teacherDeptObj
+            ? teacherDeptObj.short
+            : studentDeptShort;
+
           const studentName = (
             common.studentName || "MD. BADRUL ALOM"
           ).toUpperCase();
@@ -920,7 +942,7 @@
           <p class="submission-label">SUBMITTED TO :</p>
           <p class="person-name">${escapeHtml(teacherName)}</p>
           <p class="person-meta">${escapeHtml(teacherDesig)}</p>
-          <p class="person-meta">${escapeHtml(deptShort)}</p>
+          <p class="person-meta">${escapeHtml(teacherDeptShort)}</p>
         </div>
 
         <div class="submission-block" style="margin-top:20px;">
@@ -928,12 +950,12 @@
           <p class="person-name">${escapeHtml(studentName)}</p>
           <p class="person-meta">${escapeHtml(batch)}</p>
           <p class="person-meta">${escapeHtml(studentId)}</p>
-          <p class="person-meta">${escapeHtml(deptShort)}</p>
+          <p class="person-meta">${escapeHtml(studentDeptShort)}</p>
         </div>
 
         ${subDate ? `<div class="submission-date-line">Date of Submission: ${escapeHtml(subDate)}</div>` : '<div style="margin-top:auto;"></div>'}
 
-        <div class="footer-dept-title">${escapeHtml(deptFull)}</div>
+        <div class="footer-dept-title">${escapeHtml(studentDeptFull)}</div>
       </div>
     `;
         }
@@ -1000,6 +1022,7 @@
               courseCode: "",
               teacherName: "",
               teacherDesignation: "",
+              teacherDeptId: deptSelectEl.value,
               submissionDate: "",
             });
             renderAssignmentCards();
@@ -1060,3 +1083,4 @@
     </script>
   </body>
 </html>
+
